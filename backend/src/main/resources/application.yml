@@ -1,0 +1,74 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+    encoding:
+      force: true
+  shutdown: graceful
+spring:
+  application:
+    name: cnab-parser-pro
+  profiles:
+    active: ${cnab-parser-pro.spring.profiles.active:dev}
+  datasource:
+    url: ${cnab-parser-pro.datasource.url}
+    password: ${cnab-parser-pro.datasource.password}
+    username: ${cnab-parser-pro.datasource.username}
+    hikari:
+      maximum-pool-size: ${cnab-parser-pro.datasource.hikari.maximum-pool-size}
+  web:
+    resources:
+      add-mappings: false
+  jpa:
+    open-in-view: ${cnab-parser-pro.jpa.open-in-view}
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: true
+        enable_lazy_load_no_trans: ${cnab-parser-pro.jpa.properties.hibernate.enable_lazy_load_no_trans}
+    hibernate:
+      ddl-auto: ${cnab-parser-pro.jpa.hibernate.ddl-auto}
+    show-sql: ${cnab-parser-pro.jpa.show-sql}
+  h2:
+    console:
+      enabled: ${cnab-parser-pro.h2.console.enabled}
+      path: ${cnab-parser-pro.h2.console.path}
+      settings:
+        web-allow-others: ${cnab-parser-pro.h2.console.settings.web-allow-others}
+  flyway:
+    enabled: ${cnab-parser-pro.flyway.enabled}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    clean-disabled: true
+    out-of-order: false
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: America/Sao_Paulo
+    serialization:
+      write-dates-as-timestamps: false
+
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          host: ${cnab-parser-pro.security.oauth2.jwt.host}
+          client-id: ${cnab-parser-pro.security.oauth2.jwt.client-id}
+          realm: ${cnab-parser-pro.security.oauth2.jwt.realm}
+          issuer-uri: ${cnab-parser-pro.security.oauth2.jwt.issuer-uri}
+          jwk-set-uri: ${cnab-parser-pro.security.oauth2.jwt.jwk-set-uri}
+
+springdoc:
+  swagger-ui:
+    enabled: ${cnab-parser-pro.springdoc.swagger-ui.enabled}
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+
+logging:
+  pattern:
+    console: "%red(%d{yyyy-MM-dd'T'HH:mm:ssXXX}) %magenta([%thread]) [${spring.application.name}] %highlight(%-5level) %logger{36}.%M - %msg%n"
+
+
+openapi-servers-urls: ${cnab-parser-pro.openapi-servers-urls}
