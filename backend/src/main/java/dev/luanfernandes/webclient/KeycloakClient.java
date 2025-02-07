@@ -24,13 +24,16 @@ public class KeycloakClient {
     @Value("${spring.security.oauth2.resource-server.jwt.realm}")
     private String realm;
 
+    private static final String CLIENT_ID = "client_id";
+    private static final String REFRESH_TOKEN = "refresh_token";
+
     private final RestClient keycloak;
 
     public KeyCloakTokenResponse getToken(KeyCloakTokenRequest tokenRequest) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("username", tokenRequest.username());
         formData.add("password", tokenRequest.password());
-        formData.add("client_id", clientId);
+        formData.add(CLIENT_ID, clientId);
         formData.add("grant_type", "password");
         return keycloak.post()
                 .uri(TOKEN, realm)
@@ -42,9 +45,9 @@ public class KeycloakClient {
 
     public KeyCloakTokenResponse refreshToken(String refreshToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("refresh_token", refreshToken);
-        formData.add("client_id", clientId);
-        formData.add("grant_type", "refresh_token");
+        formData.add(REFRESH_TOKEN, refreshToken);
+        formData.add(CLIENT_ID, clientId);
+        formData.add("grant_type", REFRESH_TOKEN);
         return keycloak.post()
                 .uri(TOKEN, realm)
                 .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
@@ -55,8 +58,8 @@ public class KeycloakClient {
 
     public void logout(String refreshToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("refresh_token", refreshToken);
-        formData.add("client_id", clientId);
+        formData.add(REFRESH_TOKEN, refreshToken);
+        formData.add(CLIENT_ID, clientId);
         keycloak.post()
                 .uri(LOGOUT, realm)
                 .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
