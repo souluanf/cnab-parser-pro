@@ -251,27 +251,39 @@ button:hover {
 .logout-button:hover {
     background: #e74c3c;
 }
-
-table {
-    width: 90%;
-    border-collapse: collapse;
+.table-container {
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
     background: white;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    overflow: hidden;
-    margin-top: 20px;
+    padding: 0;
+    margin: 0 auto;
+}
+
+table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
 }
 
 th, td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    white-space: nowrap;
 }
 
 th {
     background: #2c3e50;
     color: white;
     text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 tr:nth-child(even) {
@@ -280,6 +292,13 @@ tr:nth-child(even) {
 
 tr:hover {
     background: #ddd;
+}
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .pagination {
@@ -306,14 +325,6 @@ tr:hover {
 .pagination button:disabled {
     background: #bdc3c7;
     cursor: not-allowed;
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
 }
 
 .search-container {
@@ -358,4 +369,58 @@ tr:hover {
     .search-container {
         width: 90%;
     }
+}
+.error-message {
+    font-size: 18px;
+    color: #c0392b;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.error-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #e74c3c;
+    background: #fceeee;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.error-item {
+    padding: 8px;
+    border-bottom: 1px solid #e74c3c;
+}
+
+.error-item:last-child {
+    border-bottom: none;
+}
+
+.clear-errors {
+    background: #e74c3c;
+    color: white;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.clear-errors:hover {
+    background: #c0392b;
+}
+
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: #f4f6f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
