@@ -1,10 +1,16 @@
 document.addEventListener("DOMContentLoaded", async function () {
     verificarAutenticacao();
     await carregarNavbar();
+    configurarLogout();
+    if (window.location.pathname.includes("transactions_by_store")) {
+        const searchButton = document.getElementById("searchStore");
+        if (searchButton) {
+            searchButton.addEventListener("click", carregarTransacoesPorLoja);
+        }
+    }
     await configurarUpload();
     await carregarTransacoes();
     await carregarSaldosLojas();
-    configurarLogout();
 });
 
 const API_URL = "http://localhost:8080/api/v1/auth";
@@ -137,9 +143,11 @@ async function logout() {
             });
 
             if (!response.ok) {
+                throw new Error("Erro ao tentar deslogar no servidor.");
             }
         }
     } catch (error) {
+        throw error;
     } finally {
         localStorage.clear();
         window.location.href = "/login";
@@ -147,18 +155,12 @@ async function logout() {
 }
 
 function configurarLogout() {
-    document.addEventListener("DOMContentLoaded", function () {
-        setTimeout(() => {
-            const logoutButton = document.getElementById("logoutButton");
-
-            if (logoutButton) {
-                logoutButton.addEventListener("click", async function () {
-                    await logout();
-                });
-            } else {
-            }
-        }, 500);
-    });
+    const logoutButton = document.getElementById("logoutButton");
+    if (logoutButton) {
+        logoutButton.addEventListener("click", async function () {
+            await logout();
+        });
+    }
 }
 
 async function login(event) {
@@ -195,7 +197,6 @@ async function carregarNavbar() {
     if (!navbarContainer) {
         return;
     }
-
     try {
         const response = await fetch("navbar.html");
         if (!response.ok) {
@@ -203,21 +204,11 @@ async function carregarNavbar() {
         }
 
         navbarContainer.innerHTML = await response.text();
-        destacarPaginaAtiva();
+
+        configurarLogout();
     } catch (error) {
-       throw new Error("Erro ao carregar a navbar");
+        throw new Error("Erro ao carregar a navbar");
     }
-}
-
-function destacarPaginaAtiva() {
-    const paginaAtual = window.location.pathname.split("/").pop();
-    const links = document.querySelectorAll(".nav-link");
-
-    links.forEach(link => {
-        if (link.getAttribute("href") === paginaAtual) {
-            link.classList.add("active");
-        }
-    });
 }
 
 function configurarUpload() {
@@ -264,7 +255,6 @@ function configurarUpload() {
             }
         } catch (error) {
             messageDiv.innerHTML = `<span class="error-message">Erro ao enviar arquivo: ${error.message}</span>`;
-            console.error("Erro:", error);
         }
     });
 }
@@ -327,12 +317,15 @@ async function carregarTransacoes() {
             tabela.appendChild(row);
         });
     } catch (error) {
-        console.error("Erro ao carregar transações:", error);
+        throw new Error("Erro ao carregar transações");
     }
 }
 
 async function carregarSaldosLojas() {
     const tabela = document.getElementById("balancesTable");
+    if (!tabela) {
+        return;
+    }
     tabela.innerHTML = "";
 
     try {
@@ -373,6 +366,3 @@ async function carregarSaldosLojas() {
         tabela.innerHTML = "<tr><td colspan='3'>Erro ao carregar os dados</td></tr>";
     }
 }
-
-document.getElementById("searchStore").addEventListener("click", carregarTransacoesPorLoja);
-
