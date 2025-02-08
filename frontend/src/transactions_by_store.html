@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transações por Loja</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script defer src="js/app.js"></script>
+</head>
+<body>
+<div class="container">
+    <div id="navbar-container"></div>
+    <main class="content">
+        <div class="search-container">
+            <label for="storeName">Buscar por Loja:</label>
+            <input type="text" id="storeName" placeholder="Digite o nome da loja">
+            <button id="searchStore">Buscar</button>
+        </div>
+
+        <div class="table-container" id="storeTableContainer" style="display: none;">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                    <th>CPF</th>
+                    <th>Cartão</th>
+                    <th>Hora</th>
+                    <th>Dono</th>
+                </tr>
+                </thead>
+                <tbody id="storeTransactionsTable"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>
