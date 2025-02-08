@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    console.log("Aplicação CNAB Parser carregada.");
     verificarAutenticacao();
     await carregarNavbar();
     await configurarUpload();
     await carregarTransacoes();
     await carregarSaldosLojas();
+    configurarLogout();
 });
-const API_URL = "http://localhost:8080/api/v1/auth";
 
+const API_URL = "http://localhost:8080/api/v1/auth";
 
 async function obterToken() {
     let token = localStorage.getItem("access_token");
@@ -22,9 +22,11 @@ async function obterToken() {
 
 function verificarAutenticacao() {
     const token = localStorage.getItem("access_token");
+    const expiresIn = localStorage.getItem("expires_in");
     const isLoginPage = window.location.pathname.includes("login");
-
-    if (!token && !isLoginPage) {
+    if (isLoginPage) return;
+    if (!token || (expiresIn && Date.now() >= expiresIn)) {
+        localStorage.clear();
         window.location.href = "/login";
     }
 }
@@ -53,8 +55,7 @@ async function refreshToken() {
         return data.access_token;
 
     } catch (error) {
-        console.error("Erro ao renovar token:", error);
-        logout();
+        await logout();
         return null;
     }
 }
@@ -112,8 +113,6 @@ async function carregarTransacoesPorLoja() {
         tableContainer.style.display = "block";
 
     } catch (error) {
-        console.error("Erro ao carregar transações:", error);
-        alert("Erro ao buscar transações.");
     }
 }
 
@@ -127,18 +126,39 @@ function armazenarTokens(data) {
 async function logout() {
     const refreshToken = localStorage.getItem("refresh_token");
 
-    if (refreshToken) {
-        await fetch(`${API_URL}/logout`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${refreshToken}`
-            }
-        });
-    }
+    try {
+        if (refreshToken) {
+            const response = await fetch(`${API_URL}/logout`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${refreshToken}`
+                }
+            });
 
-    localStorage.clear();
-    window.location.href = "/login";
+            if (!response.ok) {
+            }
+        }
+    } catch (error) {
+    } finally {
+        localStorage.clear();
+        window.location.href = "/login";
+    }
+}
+
+function configurarLogout() {
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+            const logoutButton = document.getElementById("logoutButton");
+
+            if (logoutButton) {
+                logoutButton.addEventListener("click", async function () {
+                    await logout();
+                });
+            } else {
+            }
+        }, 500);
+    });
 }
 
 async function login(event) {
@@ -170,14 +190,23 @@ if (loginForm) {
     loginForm.addEventListener("submit", login);
 }
 
-function carregarNavbar() {
-    fetch("navbar.html")
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById("navbar-container").innerHTML = data;
-            destacarPaginaAtiva();
-        })
-        .catch(error => console.error("Erro ao carregar a navbar:", error));
+async function carregarNavbar() {
+    const navbarContainer = document.getElementById("navbar-container");
+    if (!navbarContainer) {
+        return;
+    }
+
+    try {
+        const response = await fetch("navbar.html");
+        if (!response.ok) {
+            throw new Error("Erro ao carregar a navbar");
+        }
+
+        navbarContainer.innerHTML = await response.text();
+        destacarPaginaAtiva();
+    } catch (error) {
+       throw new Error("Erro ao carregar a navbar");
+    }
 }
 
 function destacarPaginaAtiva() {
@@ -190,57 +219,6 @@ function destacarPaginaAtiva() {
         }
     });
 }
-
-async function carregarTransacoesPorCPF() {
-    const tabela = document.getElementById("cpfTransactionsTable");
-    const tableContainer = document.getElementById("cpfTableContainer");
-    const cpf = document.getElementById("cpf").value.trim();
-
-    if (!cpf) {
-        alert("Por favor, digite um CPF válido.");
-        return;
-    }
-
-    try {
-        const token = await obterToken();
-        const response = await fetch(`http://localhost:8080/api/v1/transactions/cpf/${cpf}`, {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" }
-        });
-
-        if (!response.ok) throw new Error("Erro ao buscar transações");
-
-        const transacoes = await response.json();
-        tabela.innerHTML = "";
-
-        if (transacoes.length === 0) {
-            tableContainer.style.display = "none";
-            alert("Nenhuma transação encontrada para esse CPF.");
-            return;
-        }
-
-        transacoes.forEach(tx => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${tx.id}</td>
-                <td>${tx.description}</td>
-                <td>${tx.date}</td>
-                <td>${tx.hour}</td>
-                <td>${tx.value.toFixed(2)}</td>
-                <td>${tx.cpf}</td>
-                <td>${tx.card}</td>
-                <td>${tx.storeName}</td>
-                <td>${tx.storeOwner}</td>
-            `;
-            tabela.appendChild(row);
-        });
-        tableContainer.style.display = "block";
-
-    } catch (error) {
-        console.error("Erro ao carregar transações:", error);
-    }
-}
-
 
 function configurarUpload() {
     const uploadForm = document.getElementById("uploadForm");
@@ -392,7 +370,6 @@ async function carregarSaldosLojas() {
         });
 
     } catch (error) {
-        console.error("Erro ao carregar saldos das lojas:", error);
         tabela.innerHTML = "<tr><td colspan='3'>Erro ao carregar os dados</td></tr>";
     }
 }

@@ -251,6 +251,7 @@ button:hover {
 .logout-button:hover {
     background: #e74c3c;
 }
+
 .table-container {
     width: 100%;
     max-height: 400px;
