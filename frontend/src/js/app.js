@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("Aplicação CNAB Parser carregada.");
+    verificarAutenticacao();
     await carregarNavbar();
     await configurarUpload();
     await carregarTransacoes();
@@ -19,6 +20,14 @@ async function obterToken() {
     return token;
 }
 
+function verificarAutenticacao() {
+    const token = localStorage.getItem("access_token");
+    const isLoginPage = window.location.pathname.includes("login");
+
+    if (!token && !isLoginPage) {
+        window.location.href = "/login";
+    }
+}
 
 async function refreshToken() {
     const refreshToken = localStorage.getItem("refresh_token");
@@ -284,24 +293,28 @@ function configurarUpload() {
 
 function mostrarErrosProcessamento(stacktrace) {
     const messageDiv = document.getElementById("message");
-    if (!messageDiv) return;
-
+    const uploadForm = document.getElementById("uploadForm");
+    if (!messageDiv || !uploadForm) return;
+    uploadForm.style.display = "none";
     let erroHTML = `
         <span class="error-message">Ocorreu um erro ao processar o arquivo:</span>
         <ul class="error-list">
     `;
-
     stacktrace.forEach(error => {
         erroHTML += `
-            <li>
+            <li class="error-item">
                 <strong>Linha ${error.linha}:</strong> ${error.content} <br>
                 <em>Erro:</em> ${error.reason}
             </li>
         `;
     });
-
-    erroHTML += `</ul>`;
+    erroHTML += `</ul>
+    <button id="clearErrors" class="clear-errors">🧹 Limpar Erros</button>`;
     messageDiv.innerHTML = erroHTML;
+    document.getElementById("clearErrors").addEventListener("click", function () {
+        messageDiv.innerHTML = "";
+        uploadForm.style.display = "flex";
+    });
 }
 
 async function carregarTransacoes() {
