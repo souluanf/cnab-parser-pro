@@ -41,6 +41,7 @@ fornecendo um **dashboard interativo** para análise dos dados.
    - [Acessar a API Documentada (Swagger)](#acessar-a-api-documentada-swagger)
 4. [Credenciais Padrao](#credenciais-padrão)
 5. [Testes Automatizados](#testes-automatizados)
+6. [Integração Contínua](#integração-contínua)
 5. [Query](#query)
 
 
@@ -140,18 +141,26 @@ Ou via **Postman**:
 
 ## Testes Automatizados
 
-Este projeto possui **testes unitários e de integração** garantindo a qualidade do código. Para executá-los, rode:
+Este projeto possui **testes unitários e de integração** garantindo a qualidade do código. Para executá-los localmente, utilize:
 
 ```bash
 mvn test
 ```
 
-Os testes cobrem:
+---
 
-✅ **Validação e importação de arquivos CNAB**  
-✅ **Persistência de dados no PostgreSQL**  
-✅ **Autenticação e geração de tokens JWT**  
-✅ **Endpoints da API (Controller e Service)**
+## Integração Contínua
+
+Os testes são executados automaticamente por um **pipeline de integração contínua** via **GitHub Actions**.  
+A qualidade do código é monitorada em tempo real pelo **SonarCloud**, assegurando **segurança, eficiência e conformidade com boas práticas de desenvolvimento**.
+
+🔹 **GitHub Actions:** Automatiza a execução dos testes e a verificação do código a cada novo commit.  
+🔹 **SonarCloud:** Analisa métricas como cobertura de código, vulnerabilidades, código duplicado e manutenibilidade.
+
+🔗 **Acompanhe a execução dos pipelines e relatórios detalhados:**
+
+- 📌 **[GitHub Actions - Status do Pipeline](https://github.com/souluanf/cnab-parser-pro/actions)**
+- 📌 **[SonarCloud - Análise de Qualidade do Código](https://sonarcloud.io/summary/overall?id=souluanf_cnab-parser-pro&branch=main)**
 
 ---
 
